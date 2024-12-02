@@ -13,7 +13,7 @@ public class Day02 : CustomInputPathBaseDay
     {
         _input = [];
         var input = File.ReadAllLines(InputFilePath);
-        foreach (var line in input) 
+        foreach (var line in input)
         {
             _input.Add(line.Split(" ").Select(int.Parse).ToList());
         }
@@ -22,30 +22,19 @@ public class Day02 : CustomInputPathBaseDay
 
     public override ValueTask<string> Solve_1()
     {
-        var safe = 0;
-        foreach (var line in _input)
-        {
-            if (IsSafe(line)) safe++;
-        }
+        var safe = _input.Count(IsSafe);
         return new ValueTask<string>(safe.ToString());
     }
 
     public override ValueTask<string> Solve_2()
     {
-        var safe = 0;
-        foreach (var line in _input)
-        {
-            if (RemoveSteps(line).Any(IsSafe))
-            {
-                safe++;
-            }
-        }
+        var safe = _input.Count(l => RemoveSteps(l).Any(IsSafe));
         return new ValueTask<string>(safe.ToString());
     }
 
     private static IEnumerable<List<int>> RemoveSteps(List<int> steps)
     {
-        for(int i = 0; i < steps.Count; i++)
+        for (int i = 0; i < steps.Count; i++)
         {
             var newSteps = steps.ToList();
             newSteps.RemoveAt(i);
