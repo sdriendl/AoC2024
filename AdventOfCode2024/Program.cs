@@ -7,3 +7,5 @@ await Solver.SolveAll(opt =>
     opt.ShowTotalElapsedTimePerDay = true;
     opt.ShowConstructorElapsedTime = true;
 });
+
+//BenchmarkRunner.Run<DayBenchmark>();
