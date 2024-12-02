@@ -1,4 +1,6 @@
-﻿namespace AdventOfCode2024.Days;
+﻿using MoreLinq;
+
+namespace AdventOfCode2024.Days;
 
 public class Day02 : CustomInputPathBaseDay
 {
@@ -6,6 +8,7 @@ public class Day02 : CustomInputPathBaseDay
 
     public Day02()
     {
+        _input = [];
         Initialize();
     }
 
@@ -36,7 +39,7 @@ public class Day02 : CustomInputPathBaseDay
     {
         for (int i = 0; i < steps.Count; i++)
         {
-            yield return [.. steps[..i], ..steps[(i+1)..]];
+            yield return [.. steps[..i], .. steps[(i + 1)..]];
         }
     }
 
@@ -45,6 +48,7 @@ public class Day02 : CustomInputPathBaseDay
         var increasing = true;
         var decreasing = true;
         var levelDifferenceSafe = true;
+        var stepsSizes = new HashSet<int>();
         for (var i = 0; i < line.Count - 1; i++)
         {
             var levelDiff = line[i] - line[i + 1];
@@ -57,5 +61,16 @@ public class Day02 : CustomInputPathBaseDay
             return true;
         }
         return false;
+    }
+
+    // slow, but neat
+    private static bool IsSafeSlow(List<int> line)
+    {
+        var stepSizes = line.Window(2)
+                            .Select(w => w[0] - w[1])
+                            .ToHashSet();
+
+        return stepSizes.IsSubsetOf([-1, -2, -3]) 
+            | stepSizes.IsSubsetOf([1, 2, 3]);
     }
 }
