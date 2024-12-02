@@ -3,13 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34322.80
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdventOfCode2023", "AdventOfCode2023\AdventOfCode2023.csproj", "{2C02B482-6683-44E0-A0FD-44C63C5521D1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdventOfCode2024", "AdventOfCode2024\AdventOfCode2024.csproj", "{EA4917B3-FE05-43AE-95B4-A91884E27EA5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Everyone.Codes", "Everyone.Codes\Everyone.Codes.csproj", "{24D08DAC-F9AF-45F4-BB4B-B2DFDC79E6D6}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdventOfCode2024", "AdventOfCode2024\AdventOfCode2024.csproj", "{EA4917B3-FE05-43AE-95B4-A91884E27EA5}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdventOfCode2024.Test", "AdventOfCode2024.Test\AdventOfCode2024.Test.csproj", "{D8D91000-9EB5-4C0D-962A-EAF7B637142A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdventOfCode2024.Test", "AdventOfCode2024.Test\AdventOfCode2024.Test.csproj", "{D8D91000-9EB5-4C0D-962A-EAF7B637142A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,14 +13,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{2C02B482-6683-44E0-A0FD-44C63C5521D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2C02B482-6683-44E0-A0FD-44C63C5521D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2C02B482-6683-44E0-A0FD-44C63C5521D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2C02B482-6683-44E0-A0FD-44C63C5521D1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{24D08DAC-F9AF-45F4-BB4B-B2DFDC79E6D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{24D08DAC-F9AF-45F4-BB4B-B2DFDC79E6D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{24D08DAC-F9AF-45F4-BB4B-B2DFDC79E6D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{24D08DAC-F9AF-45F4-BB4B-B2DFDC79E6D6}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EA4917B3-FE05-43AE-95B4-A91884E27EA5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EA4917B3-FE05-43AE-95B4-A91884E27EA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EA4917B3-FE05-43AE-95B4-A91884E27EA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
