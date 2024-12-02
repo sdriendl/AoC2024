@@ -36,9 +36,7 @@ public class Day02 : CustomInputPathBaseDay
     {
         for (int i = 0; i < steps.Count; i++)
         {
-            var newSteps = steps.ToList();
-            newSteps.RemoveAt(i);
-            yield return newSteps;
+            yield return [.. steps[..i], ..steps[(i+1)..]];
         }
     }
 
