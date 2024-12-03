@@ -17,7 +17,7 @@ public sealed class Day03 : CustomInputPathBaseDay
 
     public override ValueTask<string> Solve_1()
     {
-        var rx = new Regex(@"mul\((?<FirstNumber>\d+),(?<SecondNumber>\d+)\)");
+        var rx = new Regex(@"mul\((?<FirstNumber>\d{1,3}),(?<SecondNumber>\d{1,3})\)");
         var matches = rx.Matches(_input);
 
         var result = matches.Sum(m =>
@@ -29,7 +29,7 @@ public sealed class Day03 : CustomInputPathBaseDay
 
     public override ValueTask<string> Solve_2()
     {
-        var rx = new Regex(@"(mul\((?<FirstNumber>\d+),(?<SecondNumber>\d+)\))|do\(\)|don't\(\)");
+        var rx = new Regex(@"(mul\((?<FirstNumber>\d{1,3}),(?<SecondNumber>\d{1,3})\))|do\(\)|don't\(\)");
         var matches = rx.Matches(_input);
 
         var enabled = true;
