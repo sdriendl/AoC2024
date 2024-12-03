@@ -23,6 +23,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\AdventOfCode.Common\AdventOfCode.Common.csproj" />
       <ProjectReference Include="..\AdventOfCode2024\AdventOfCode2024.csproj" />
     </ItemGroup>
 

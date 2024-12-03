@@ -24,4 +24,8 @@
       <Folder Include="Inputs\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\AdventOfCode.Common\AdventOfCode.Common.csproj" />
+    </ItemGroup>
+
 </Project>

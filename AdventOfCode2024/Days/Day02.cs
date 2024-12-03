@@ -1,4 +1,5 @@
-﻿using MoreLinq;
+﻿using AdventOfCode.Common;
+using MoreLinq;
 
 namespace AdventOfCode2024.Days;
 
@@ -18,7 +19,9 @@ public class Day02 : CustomInputPathBaseDay
         var input = File.ReadAllLines(InputFilePath);
         foreach (var line in input)
         {
-            _input.Add(line.Split(" ").Select(int.Parse).ToList());
+            _input.Add(line.Split(" ")
+                           .Select(int.Parse)
+                           .ToList());
         }
         return;
     }

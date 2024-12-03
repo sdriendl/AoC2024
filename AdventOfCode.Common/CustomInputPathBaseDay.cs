@@ -1,6 +1,6 @@
 ﻿using AoCHelper;
 
-namespace AdventOfCode2024;
+namespace AdventOfCode.Common;
 
 public abstract class CustomInputPathBaseDay : BaseDay
 {

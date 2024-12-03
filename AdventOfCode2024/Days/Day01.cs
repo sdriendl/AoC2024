@@ -1,4 +1,6 @@
-﻿namespace AdventOfCode2024.Days;
+﻿using AdventOfCode.Common;
+
+namespace AdventOfCode2024.Days;
 public sealed class Day01 : CustomInputPathBaseDay
 {
     private int[]? _left;
