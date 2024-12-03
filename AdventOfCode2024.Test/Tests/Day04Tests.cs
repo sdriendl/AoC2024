@@ -1,9 +1,9 @@
+﻿using AdventOfCode.Common;
 using AdventOfCode2024.Days;
-using AdventOfCode.Common;
 
 namespace AdventOfCode2024.Test.Tests;
 
-public class Day01Tests
+public class Day04Tests
 {
     [Fact]
     public async void Solve_1_ReturnsCorrectResult()
@@ -11,17 +11,12 @@ public class Day01Tests
         // Arrange
         var testInput =
             """
-            3   4
-            4   3
-            2   5
-            1   3
-            3   9
-            3   3
+
             """;
 
 
         using var tempFile = new TemporaryInputFile(testInput);
-        var day = new Day01
+        var day = new Day04
         {
             TestInputFilePath = tempFile.FilePath
         };
@@ -30,7 +25,7 @@ public class Day01Tests
         var result = await day.Solve_1();
 
         // Assert
-        Assert.Equal("11", result);
+        Assert.Equal("123", result);
     }
 
     [Fact]
@@ -39,16 +34,12 @@ public class Day01Tests
         // Arrange
         var testInput =
             """
-            3   4
-            4   3
-            2   5
-            1   3
-            3   9
-            3   3
+
             """;
 
+
         using var tempFile = new TemporaryInputFile(testInput);
-        var day = new Day01
+        var day = new Day04
         {
             TestInputFilePath = tempFile.FilePath
         };
@@ -57,6 +48,6 @@ public class Day01Tests
         var result = await day.Solve_2();
 
         // Assert
-        Assert.Equal("31", result);
+        Assert.Equal("123", result);
     }
 }

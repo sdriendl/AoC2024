@@ -16,6 +16,7 @@ public class Day02 : CustomInputPathBaseDay
     protected override void Initialize()
     {
         _input = [];
+
         var input = File.ReadAllLines(InputFilePath);
         foreach (var line in input)
         {
@@ -23,7 +24,6 @@ public class Day02 : CustomInputPathBaseDay
                            .Select(int.Parse)
                            .ToList());
         }
-        return;
     }
 
     public override ValueTask<string> Solve_1()
@@ -72,7 +72,7 @@ public class Day02 : CustomInputPathBaseDay
                             .Select(w => w[0] - w[1])
                             .ToHashSet();
 
-        return stepSizes.IsSubsetOf([-1, -2, -3]) 
+        return stepSizes.IsSubsetOf([-1, -2, -3])
             || stepSizes.IsSubsetOf([1, 2, 3]);
     }
 }

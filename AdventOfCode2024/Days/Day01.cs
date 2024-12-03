@@ -13,16 +13,18 @@ public sealed class Day01 : CustomInputPathBaseDay
 
     protected override void Initialize()
     {
+
         var input = File.ReadAllLines(InputFilePath);
         var n = input.Length;
         _left = new int[n];
-        _right = new int [n];
+        _right = new int[n];
         for (var i = 0; i < n; i++)
         {
             var s = input[i].Split("   ");
             _left[i] = int.Parse(s[0]);
             _right[i] = int.Parse(s[1]);
         }
+
     }
 
     public override ValueTask<string> Solve_1()

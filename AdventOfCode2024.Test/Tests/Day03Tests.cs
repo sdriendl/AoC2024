@@ -1,5 +1,5 @@
-﻿using AdventOfCode2024.Days;
-using AdventOfCode2024.Test.Helper;
+﻿using AdventOfCode.Common;
+using AdventOfCode2024.Days;
 
 namespace AdventOfCode2024.Test.Tests;
 

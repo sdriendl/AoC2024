@@ -1,6 +1,6 @@
-﻿namespace AdventOfCode2024.Test.Helper;
+﻿namespace AdventOfCode.Common;
 
-internal class TemporaryInputFile : IDisposable
+public class TemporaryInputFile : IDisposable
 {
     public string FilePath { get; }
 
