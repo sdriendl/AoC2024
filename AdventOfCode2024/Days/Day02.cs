@@ -48,13 +48,12 @@ public class Day02 : CustomInputPathBaseDay
         var increasing = true;
         var decreasing = true;
         var levelDifferenceSafe = true;
-        var stepsSizes = new HashSet<int>();
         for (var i = 0; i < line.Count - 1; i++)
         {
             var levelDiff = line[i] - line[i + 1];
-            increasing &= levelDiff > 0;
-            decreasing &= levelDiff < 0;
-            levelDifferenceSafe &= Math.Abs(levelDiff) >= 0 && Math.Abs(levelDiff) <= 3;
+            increasing &= levelDiff >= 0;
+            decreasing &= levelDiff <= 0;
+            levelDifferenceSafe &= Math.Abs(levelDiff) > 0 && Math.Abs(levelDiff) <= 3;
         }
         if (levelDifferenceSafe && (increasing ^ decreasing))
         {
@@ -71,6 +70,6 @@ public class Day02 : CustomInputPathBaseDay
                             .ToHashSet();
 
         return stepSizes.IsSubsetOf([-1, -2, -3]) 
-            | stepSizes.IsSubsetOf([1, 2, 3]);
+            || stepSizes.IsSubsetOf([1, 2, 3]);
     }
 }

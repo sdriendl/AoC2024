@@ -1,4 +1,4 @@
-﻿namespace AdventOfCode2024.Test;
+﻿namespace AdventOfCode2024.Test.Helper;
 
 internal class TemporaryInputFile : IDisposable
 {

@@ -1,4 +1,4 @@
-﻿namespace AdventOfCode2024.Days; 
+﻿namespace AdventOfCode2024.Days;
 public sealed class Day01 : CustomInputPathBaseDay
 {
     private int[]? _left;
@@ -51,7 +51,7 @@ public sealed class Day01 : CustomInputPathBaseDay
         var counts = _right!
             .GroupBy(x => x)
             .ToDictionary(g => g.Key, g => g.Count());
-        
+
         var similarity = _left!.Sum(n => n * counts.GetValueOrDefault(n, 0));
 
         return new ValueTask<string>(similarity.ToString());
