@@ -29,8 +29,8 @@ public class DayBenchmark
     [Benchmark]
     public ValueTask<string> Day3Part2() => _day03.Solve_2();
 
-    //[Benchmark]
-    //public ValueTask<string> Day4Part1() => _day04.Solve_1();
-    //[Benchmark]
-    //public ValueTask<string> Day4Part2() => _day04.Solve_2();
+    [Benchmark]
+    public ValueTask<string> Day4Part1() => _day04.Solve_1();
+    [Benchmark]
+    public ValueTask<string> Day4Part2() => _day04.Solve_2();
 }
