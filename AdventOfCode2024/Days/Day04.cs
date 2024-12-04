@@ -27,11 +27,11 @@ public sealed class Day04 : CustomInputPathBaseDay
 
     public override ValueTask<string> Solve_2()
     {
-        var result = CountMaxXs(_input);
+        var result = CountMasXs(_input);
         return new ValueTask<string>(result.ToString());
     }
 
-    private int CountMaxXs(List<List<char>> input)
+    private int CountMasXs(List<List<char>> input)
     {
         var count = 0;
         var height = input.Count;
@@ -66,8 +66,8 @@ public sealed class Day04 : CustomInputPathBaseDay
     {
         ReadOnlySpan<(int Y, int X)> directions = [
             (-1, -1), (-1, 0), (-1, 1),
-            (0, -1), (0, 1),
-            (1, -1), (1, 0), (1, 1),
+            (0, -1),           (0, 1),
+            (1, -1),  (1, 0),  (1, 1),
         ];
 
         var count = 0;
