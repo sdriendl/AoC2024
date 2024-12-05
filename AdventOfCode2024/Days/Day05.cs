@@ -16,21 +16,27 @@ public sealed class Day05 : CustomInputPathBaseDay
     {
         _rules.Clear();
         _updates.Clear();
-        var input = File.ReadAllText(InputFilePath);
-        var inputSplit = input.Split("\n\n");
-        var rulesInput = inputSplit[0];
-        var updatesInput = inputSplit[1];
-        foreach (var line in rulesInput
-            .Split("\n"))
+
+        var input = File.ReadAllLines(InputFilePath);
+        var rulesSection = true;
+        foreach (var line in input) 
         {
-            var r = line.Split("|");
-            _rules.Add((int.Parse(r[0]), int.Parse(r[1])));
+            if (string.IsNullOrWhiteSpace(line))
+            {
+                rulesSection = false;
+                continue;
+            }
+            if (rulesSection)
+            {
+                var r = line.Split("|");
+                _rules.Add((int.Parse(r[0]), int.Parse(r[1])));
+            }
+            else
+            {
+                _updates.Add(line.Split(",").Select(int.Parse).ToList());
+            }
         }
-        foreach (var line in updatesInput
-            .Split("\n", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
-        {
-            _updates.Add(line.Split(",").Select(int.Parse).ToList());
-        }
+
         _updateComparer = new UpdateComparer(_rules);
     }
 
@@ -61,8 +67,6 @@ public sealed class Day05 : CustomInputPathBaseDay
         }
     }
 
-    private bool IsOrdered(IEnumerable<int> updates, IComparer<int> comparer)
-    {
-        return updates.Order(comparer).SequenceEqual(updates);
-    }
+    private bool IsOrdered(IEnumerable<int> updates, IComparer<int> comparer) 
+        => updates.Order(comparer).SequenceEqual(updates);
 }
