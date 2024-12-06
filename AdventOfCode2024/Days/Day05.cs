@@ -7,6 +7,7 @@ public sealed class Day05 : CustomInputPathBaseDay
     private HashSet<(int, int)> _rules = [];
     private List<List<int>> _updates = [];
     private IComparer<int> _updateComparer;
+
     public Day05()
     {
         Initialize();
@@ -43,7 +44,7 @@ public sealed class Day05 : CustomInputPathBaseDay
     public override ValueTask<string> Solve_1()
     {
         var result = _updates.Where(u => IsOrdered(u, _updateComparer))
-                             .Sum(u => u.Skip(u.Count / 2).Take(1).First());
+                             .Sum(u => u.Skip(u.Count / 2).First());
 
         return new ValueTask<string>(result.ToString());
     }
@@ -52,7 +53,7 @@ public sealed class Day05 : CustomInputPathBaseDay
     {
         var result = _updates.Where(u => !IsOrdered(u, _updateComparer))
                              .Select(u => u.Order(_updateComparer))
-                             .Sum(u => u.Skip(u.Count() / 2).Take(1).First());
+                             .Sum(u => u.Skip(u.Count() / 2).First());
 
         return new ValueTask<string>(result.ToString());
     }

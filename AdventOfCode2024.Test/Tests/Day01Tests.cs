@@ -1,6 +1,3 @@
-using AdventOfCode2024.Days;
-using AdventOfCode.Common;
-
 namespace AdventOfCode2024.Test.Tests;
 
 public class Day01Tests

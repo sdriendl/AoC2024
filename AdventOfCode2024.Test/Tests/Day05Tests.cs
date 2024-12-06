@@ -1,12 +1,4 @@
-﻿using AdventOfCode.Common;
-using AdventOfCode2024.Days;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace AdventOfCode2024.Test.Tests;
+﻿namespace AdventOfCode2024.Test.Tests;
 
 public class Day05Tests
 {

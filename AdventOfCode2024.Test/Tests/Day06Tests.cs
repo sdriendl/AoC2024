@@ -1,6 +1,6 @@
 ﻿namespace AdventOfCode2024.Test.Tests;
 
-public class Day03Tests
+public class Day06Tests
 {
     [Fact]
     public async void Solve_1_ReturnsCorrectResult()
@@ -8,12 +8,21 @@ public class Day03Tests
         // Arrange
         var testInput =
             """
-            xmul(2,4)%&mul[3,7]!@^do_not_mul(5,5)+mul(32,64]then(mul(11,8)mul(8,5))
+            ....#.....
+            .........#
+            ..........
+            ..#.......
+            .......#..
+            ..........
+            .#..^.....
+            ........#.
+            #.........
+            ......#...
             """;
 
 
         using var tempFile = new TemporaryInputFile(testInput);
-        var day = new Day03
+        var day = new Day06
         {
             TestInputFilePath = tempFile.FilePath
         };
@@ -22,7 +31,7 @@ public class Day03Tests
         var result = await day.Solve_1();
 
         // Assert
-        Assert.Equal("161", result);
+        Assert.Equal("41", result);
     }
 
     [Fact]
@@ -31,12 +40,21 @@ public class Day03Tests
         // Arrange
         var testInput =
             """
-            xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))
+            ....#.....
+            .........#
+            ..........
+            ..#.......
+            .......#..
+            ..........
+            .#..^.....
+            ........#.
+            #.........
+            ......#...
             """;
 
 
         using var tempFile = new TemporaryInputFile(testInput);
-        var day = new Day03
+        var day = new Day06
         {
             TestInputFilePath = tempFile.FilePath
         };
@@ -45,6 +63,6 @@ public class Day03Tests
         var result = await day.Solve_2();
 
         // Assert
-        Assert.Equal("48", result);
+        Assert.Equal("6", result);
     }
 }
