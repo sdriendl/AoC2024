@@ -1,4 +1,5 @@
 ﻿using AdventOfCode.Common;
+using Microsoft.Diagnostics.Tracing.Parsers;
 using System.Linq;
 
 namespace AdventOfCode2024.Days;
@@ -30,7 +31,7 @@ public sealed class Day06 : CustomInputPathBaseDay
     }
     public override async ValueTask<string> Solve_2()
     {
-        var path = _board.FindPath();
+        var path = _board.FindPath().Except(new List<(int, int)> { _board.GuardPosition });
         var result = path.AsParallel().Count(obstruction => _board.HasLoop(obstruction));
         return result.ToString();
     }
@@ -110,11 +111,12 @@ public sealed class Day06 : CustomInputPathBaseDay
 
         private CheckResult CheckGuardPath(Guard guard)
         {
-            if (guard.NextPosition.X < 0 || guard.NextPosition.Y < 0 || guard.NextPosition.X >= Tiles[0].Count || guard.NextPosition.Y >= Tiles.Count)
+            (int X, int Y) nextPosition = guard.NextPosition;
+            if (nextPosition.X < 0 || nextPosition.Y < 0 || nextPosition.X >= Tiles[0].Count || nextPosition.Y >= Tiles.Count)
             {
                 return CheckResult.LeftPath;
             }
-            if (Tiles[guard.NextPosition.Y][guard.NextPosition.X] == '#')
+            if (Tiles[nextPosition.Y][nextPosition.X] == '#')
             {
                 return CheckResult.HitWall;
             }
@@ -123,15 +125,16 @@ public sealed class Day06 : CustomInputPathBaseDay
 
         private CheckResult CheckGuardPathObstructed(Guard guard, (int X, int Y) obstruction)
         {
-            if (guard.NextPosition.X < 0 || guard.NextPosition.Y < 0 || guard.NextPosition.X >= Tiles[0].Count || guard.NextPosition.Y >= Tiles.Count)
+            (int X, int Y) nextPosition = guard.NextPosition;
+            if (nextPosition.X < 0 || nextPosition.Y < 0 || nextPosition.X >= Tiles[0].Count || nextPosition.Y >= Tiles.Count)
             {
                 return CheckResult.LeftPath;
             }
-            if (Tiles[guard.NextPosition.Y][guard.NextPosition.X] == '#')
+            if (Tiles[nextPosition.Y][nextPosition.X] == '#')
             {
                 return CheckResult.HitWall;
             }
-            if (guard.NextPosition.X == obstruction.X && guard.NextPosition.Y == obstruction.Y)
+            if (nextPosition.X == obstruction.X && nextPosition.Y == obstruction.Y)
             {
                 return CheckResult.HitWall;
             }
@@ -172,14 +175,42 @@ public sealed class Day06 : CustomInputPathBaseDay
                 Position = GuardPosition,
                 Direction = GuardDirection,
             };
-            var guardState = new HashSet<(int X, int Y, int dx, int dy)>();
+            var bs = new bool[Tiles.Count * Tiles[0].Count * 4];
+            void setState(int x, int y, int dx, int dy)
+            {
+                var dir = (dx, dy) switch
+                {
+                    (-1, 0) => 0,
+                    (0, -1) => 1,
+                    (1, 0) => 2,
+                    (0, 1) => 3,
+                    _ => throw new ArgumentException(),
+                };
+                var index = (((dir * Tiles.Count) + y) * Tiles[1].Count) + x;
+                bs[index] = true;
+            }
+
+            bool checkState(int x, int y, int dx, int dy)
+            {
+                var dir = (dx, dy) switch
+                {
+                    (-1, 0) => 0,
+                    (0, -1) => 1,
+                    (1, 0) => 2,
+                    (0, 1) => 3,
+                    _ => throw new ArgumentException(),
+                };
+                var index = (((dir * Tiles.Count) + y) * Tiles[1].Count) + x;
+                return bs[index];
+            }
+
             while (true)
             {
-                if (guardState.Contains((guard.Position.X, guard.Position.Y, guard.Direction.X, guard.Direction.Y)))
+                if (checkState(guard.Position.X, guard.Position.Y, guard.Direction.X, guard.Direction.Y))
                 {
                     return true;
                 }
-                guardState.Add((guard.Position.X, guard.Position.Y, guard.Direction.X, guard.Direction.Y));
+                setState(guard.Position.X, guard.Position.Y, guard.Direction.X, guard.Direction.Y);
                 var checkResult = CheckGuardPathObstructed(guard, obstruction);
                 if (checkResult == CheckResult.LeftPath)
                 {
