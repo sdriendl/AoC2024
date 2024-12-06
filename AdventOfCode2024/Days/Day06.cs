@@ -25,29 +25,47 @@ public sealed class Day06 : CustomInputPathBaseDay
 
     public override async ValueTask<string> Solve_1()
     {
-        while (_board.Move()) ;
-        var result = _board.Marked;
+        var result = _board.FindPath().Count();
         return result.ToString();
     }
-    public override ValueTask<string> Solve_2()
+    public override async ValueTask<string> Solve_2()
     {
-        _board = new Board(_input);
-        while (_board.Move()) ;
-        var path = _board.Visited.ToList();
-        var result = path.Count(obstruction => _board.HasLoop(obstruction));
-        return new ValueTask<string>(result.ToString());
+        var path = _board.FindPath();
+        var result = path.AsParallel().Count(obstruction => _board.HasLoop(obstruction));
+        return result.ToString();
+    }
+
+    private class Guard
+    {
+        public (int X, int Y) Position;
+        public (int X, int Y) Direction;
+
+        public void Turn()
+        {
+            Direction = Direction switch
+            {
+                (-1, 0) => (0, -1),
+                (0, -1) => (1, 0),
+                (1, 0) => (0, 1),
+                (0, 1) => (-1, 0),
+                _ => throw new ArgumentException($"invalid direction {Direction}")
+            };
+        }
+
+        public (int X, int Y) NextPosition =>
+            (Position.X + Direction.X, Position.Y + Direction.Y);
+
+        public void Move()
+        {
+            Position = NextPosition;
+        }
     }
 
     private class Board
     {
-        public List<List<char>> Tiles { get; protected set; }
+        public List<List<char>> Tiles { get; private set; }
         public (int X, int Y) GuardPosition { get; protected set; }
         public (int X, int Y) GuardDirection { get; protected set; }
-        public HashSet<(int X, int Y)> Visited { get; protected set; } = [];
-        private HashSet<(int X, int Y, int dx, int dy)> GuardState = [];
-        public (int X, int Y) GuardPositionInitial { get; protected set; }
-        public (int X, int Y) GuardDirectionInital { get; protected set; }
-        public int Marked => Visited.Count;
 
         public Board(List<List<char>> input)
         {
@@ -75,42 +93,11 @@ public sealed class Day06 : CustomInputPathBaseDay
                         Tiles[y][x] = sym;
                         GuardPosition = (x, y);
                         GuardDirection = DirectionFromGlyph(sym);
-                        GuardPositionInitial = GuardPosition;
-                        GuardDirectionInital = GuardDirection;
                     }
                 }
             }
         }
 
-        public void Reset()
-        {
-            Visited.Clear();
-            GuardState.Clear();
-            Tiles[GuardPosition.Y][GuardPosition.X] = '.';
-            GuardPosition = GuardPositionInitial;
-            GuardDirection = GuardDirectionInital;
-        }
-
-        public void TurnGuard()
-        {
-            GuardDirection = GuardDirection switch
-            {
-                (-1, 0) => (0, -1),
-                (0, -1) => (1, 0),
-                (1, 0) => (0, 1),
-                (0, 1) => (-1, 0),
-                _ => throw new ArgumentException($"invalid direction {GuardDirection}")
-            };
-        }
-
-        private char GuardGlpyh =>
-            GuardDirection switch
-            {
-                (-1, 0) => '<',
-                (0, -1) => '^',
-                (1, 0) => '>',
-                (0, 1) => 'v'
-            };
 
         private (int X, int Y) DirectionFromGlyph(char glyph)
             => glyph switch
@@ -121,106 +108,90 @@ public sealed class Day06 : CustomInputPathBaseDay
                 'v' => (0, 1),
             };
 
-        private CheckResult CheckGuardPath()
+        private CheckResult CheckGuardPath(Guard guard)
         {
-            var newPosX = GuardPosition.X + GuardDirection.X;
-            var newPosY = GuardPosition.Y + GuardDirection.Y;
-            if (newPosX < 0 || newPosY < 0 || newPosX >= Tiles[0].Count || newPosY >= Tiles.Count)
+            if (guard.NextPosition.X < 0 || guard.NextPosition.Y < 0 || guard.NextPosition.X >= Tiles[0].Count || guard.NextPosition.Y >= Tiles.Count)
             {
                 return CheckResult.LeftPath;
             }
-            if (Tiles[newPosY][newPosX] == '#')
+            if (Tiles[guard.NextPosition.Y][guard.NextPosition.X] == '#')
             {
                 return CheckResult.HitWall;
             }
             return CheckResult.Free;
         }
 
-        private CheckResult CheckGuardPathObstructed((int X, int Y) obstruction)
+        private CheckResult CheckGuardPathObstructed(Guard guard, (int X, int Y) obstruction)
         {
-            var newPosX = GuardPosition.X + GuardDirection.X;
-            var newPosY = GuardPosition.Y + GuardDirection.Y;
-            if (newPosX < 0 || newPosY < 0 || newPosX >= Tiles[0].Count || newPosY >= Tiles.Count)
+            if (guard.NextPosition.X < 0 || guard.NextPosition.Y < 0 || guard.NextPosition.X >= Tiles[0].Count || guard.NextPosition.Y >= Tiles.Count)
             {
                 return CheckResult.LeftPath;
             }
-            if (Tiles[newPosY][newPosX] == '#')
+            if (Tiles[guard.NextPosition.Y][guard.NextPosition.X] == '#')
             {
                 return CheckResult.HitWall;
             }
-            if (newPosX == obstruction.X && newPosY == obstruction.Y)
+            if (guard.NextPosition.X == obstruction.X && guard.NextPosition.Y == obstruction.Y)
             {
                 return CheckResult.HitWall;
             }
             return CheckResult.Free;
         }
 
-        public bool Move()
+        public ISet<(int X, int Y)> FindPath()
         {
-            Visited.Add((GuardPosition.X, GuardPosition.Y));
-            var checkResult = CheckGuardPath();
-            if (checkResult == CheckResult.LeftPath)
+            var visited = new HashSet<(int X, int Y)>();
+            var guard = new Guard()
             {
-                return false;
-            }
-            else if (checkResult == CheckResult.HitWall)
+                Position = GuardPosition,
+                Direction = GuardDirection,
+            };
+            while (true)
             {
-                TurnGuard();
-                Tiles[GuardPosition.Y][GuardPosition.X] = GuardGlpyh;
+                visited.Add((guard.Position.X, guard.Position.Y));
+                var checkResult = CheckGuardPath(guard);
+                if (checkResult == CheckResult.LeftPath)
+                {
+                    return visited;
+                }
+                else if (checkResult == CheckResult.HitWall)
+                {
+                    guard.Turn();
+                }
+                else if (checkResult == CheckResult.Free)
+                {
+                    guard.Move();
+                }
             }
-            else if (checkResult == CheckResult.Free)
-            {
-                var newPosX = GuardPosition.X + GuardDirection.X;
-                var newPosY = GuardPosition.Y + GuardDirection.Y;
-                Tiles[GuardPosition.Y][GuardPosition.X] = '.';
-                GuardPosition = (newPosX, newPosY);
-                Tiles[GuardPosition.Y][GuardPosition.X] = GuardGlpyh;
-            }
-            return true;
-        }
-
-        private LoopResult MoveLoop((int X, int Y) obstruction)
-        {
-            if (GuardState.Contains((GuardPosition.X, GuardPosition.Y, GuardDirection.X, GuardDirection.Y)))
-            {
-                return LoopResult.Loop;
-            }
-            GuardState.Add((GuardPosition.X, GuardPosition.Y, GuardDirection.X, GuardDirection.Y));
-            var checkResult = CheckGuardPathObstructed(obstruction);
-            if (checkResult == CheckResult.LeftPath)
-            {
-                return LoopResult.NoLoop;
-            }
-            else if (checkResult == CheckResult.HitWall)
-            {
-                TurnGuard();
-                Tiles[GuardPosition.Y][GuardPosition.X] = GuardGlpyh;
-            }
-            else if (checkResult == CheckResult.Free)
-            {
-                var newPosX = GuardPosition.X + GuardDirection.X;
-                var newPosY = GuardPosition.Y + GuardDirection.Y;
-                Tiles[GuardPosition.Y][GuardPosition.X] = '.';
-                GuardPosition = (newPosX, newPosY);
-                Tiles[GuardPosition.Y][GuardPosition.X] = GuardGlpyh;
-            }
-            return LoopResult.Working;
         }
 
         public bool HasLoop((int X, int Y) obstruction)
         {
+            var guard = new Guard()
+            {
+                Position = GuardPosition,
+                Direction = GuardDirection,
+            };
+            var guardState = new HashSet<(int X, int Y, int dx, int dy)>();
             while (true)
             {
-                var res = MoveLoop(obstruction);
-                if (res == LoopResult.NoLoop)
+                if (guardState.Contains((guard.Position.X, guard.Position.Y, guard.Direction.X, guard.Direction.Y)))
                 {
-                    Reset();
+                    return true;
+                }
+                guardState.Add((guard.Position.X, guard.Position.Y, guard.Direction.X, guard.Direction.Y));
+                var checkResult = CheckGuardPathObstructed(guard, obstruction);
+                if (checkResult == CheckResult.LeftPath)
+                {
                     return false;
                 }
-                if (res == LoopResult.Loop)
+                else if (checkResult == CheckResult.HitWall)
                 {
-                    Reset();
-                    return true;
+                    guard.Turn();
+                }
+                else if (checkResult == CheckResult.Free)
+                {
+                    guard.Move();
                 }
             }
         }
@@ -235,11 +206,5 @@ public sealed class Day06 : CustomInputPathBaseDay
         Free,
         HitWall,
         LeftPath
-    }
-    private enum LoopResult
-    {
-        Working,
-        NoLoop,
-        Loop,
     }
 }
