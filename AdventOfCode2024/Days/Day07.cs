@@ -19,21 +19,21 @@ public sealed class Day07 : CustomInputPathBaseDay
 
     public override async ValueTask<string> Solve_1()
     {
-        List<Func<long, long, long>> ops =
+        Func<long, long, long>[] ops =
         [
             (a, b) => a * b,
             (a, b) => a + b
         ];
         return _input
             .AsParallel()
-            .Where(x => EquationSatisifiable(x, ops))
+            .Where(x => EquationSatisfiable(x.Target, x.Values, 0,0, ops))
             .Sum(e => e.Target)
             .ToString();
     }
 
     public override async ValueTask<string> Solve_2()
     {
-        List<Func<long, long, long>> ops =
+        Func<long, long, long>[] ops =
         [
             (a, b) => a * b,
             (a, b) => a + b,
@@ -45,24 +45,22 @@ public sealed class Day07 : CustomInputPathBaseDay
         ];
         return _input
             .AsParallel()
-            .Where(x => EquationSatisifiable(x, ops))
+            .Where(x => EquationSatisfiable(x.Target, x.Values, 0,0, ops))
             .Sum(e => e.Target)
             .ToString();
     }
 
-    private bool EquationSatisifiable(Equation equation, List<Func<long, long, long>> ops)
+
+    private bool EquationSatisfiable(long target, long[] numbers, long result, int index, Func<long, long, long>[] ops)
     {
-        var combinations = ops.CartesianPower(equation.Values.Count - 1);
-
-        return combinations.Any(combination =>
-        {
-            return equation.Values.Skip(1).Zip(combination)
-                       .Aggregate(equation.Values.First(), (acc, x) => x.Second(acc, x.First))
-                   == equation.Target;
-        });
+        if (index == numbers.Length) return result == target;
+        if (result > target) return false;
+       
+        return ops.Any(op 
+            => EquationSatisfiable(target, numbers, op(result, numbers[index]), index + 1, ops));
     }
-
-    private record Equation(long Target, List<long> Values)
+    
+    private record Equation(long Target, long[] Values)
     {
         public static Equation Parse(string line)
         {
@@ -73,7 +71,7 @@ public sealed class Day07 : CustomInputPathBaseDay
             var values = parts[1]
                 .Split(' ', StringSplitOptions.RemoveEmptyEntries)
                 .Select(long.Parse)
-                .ToList();
+                .ToArray();
 
             return new Equation(target, values);
         }
