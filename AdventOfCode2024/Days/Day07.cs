@@ -19,20 +19,23 @@ public sealed class Day07 : CustomInputPathBaseDay
 
     public override async ValueTask<string> Solve_1()
     {
+        // For use with EquationSatisfiable, elegant, but sadly slow
         Func<long, long, long>[] ops =
         [
             (a, b) => a * b,
             (a, b) => a + b
         ];
+
         return _input
             .AsParallel()
-            .Where(x => EquationSatisfiable(x.Target, x.Values, 0,0, ops))
+            .Where(x => EquationSatisfiableAddMul(x.Target, x.Values, 0, 0))
             .Sum(e => e.Target)
             .ToString();
     }
 
     public override async ValueTask<string> Solve_2()
     {
+        // For use with EquationSatisfiable, elegant, but sadly slow
         Func<long, long, long>[] ops =
         [
             (a, b) => a * b,
@@ -43,23 +46,49 @@ public sealed class Day07 : CustomInputPathBaseDay
                 return a * p + b;
             }
         ];
+
         return _input
             .AsParallel()
-            .Where(x => EquationSatisfiable(x.Target, x.Values, 0,0, ops))
+            .Where(x => EquationSatisfiableAddMulConcat(x.Target, x.Values, 0, 0))
             .Sum(e => e.Target)
             .ToString();
     }
 
 
-    private bool EquationSatisfiable(long target, long[] numbers, long result, int index, Func<long, long, long>[] ops)
+    private bool EquationSatisfiable(long target, long[] values, long result, int index, Func<long, long, long>[] ops)
     {
-        if (index == numbers.Length) return result == target;
+        if (index == values.Length) return result == target;
         if (result > target) return false;
-       
-        return ops.Any(op 
-            => EquationSatisfiable(target, numbers, op(result, numbers[index]), index + 1, ops));
+
+        return ops.Any(op
+            => EquationSatisfiable(target, values, op(result, values[index]), index + 1, ops));
     }
-    
+
+    private bool EquationSatisfiableAddMulConcat(long target, long[] values, long result, int index)
+    {
+        if (index == values.Length) return result == target;
+        if (result > target) return false;
+
+        return EquationSatisfiableAddMulConcat(target, values, result + values[index], index + 1)
+               || EquationSatisfiableAddMulConcat(target, values, result * values[index], index + 1)
+               || EquationSatisfiableAddMulConcat(target, values, Concat(result, values[index]), index + 1);
+
+        long Concat(long a, long b)
+        {
+            var p = (int)Math.Pow(10, b.ToString().Length);
+            return a * p + b;
+        }
+    }
+
+    private bool EquationSatisfiableAddMul(long target, long[] values, long result, int index)
+    {
+        if (index == values.Length) return result == target;
+        if (result > target) return false;
+
+        return EquationSatisfiableAddMul(target, values, result + values[index], index + 1)
+               || EquationSatisfiableAddMul(target, values, result * values[index], index + 1);
+    }
+
     private record Equation(long Target, long[] Values)
     {
         public static Equation Parse(string line)
