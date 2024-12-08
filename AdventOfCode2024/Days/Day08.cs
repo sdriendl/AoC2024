@@ -37,11 +37,7 @@ public sealed class Day08 : CustomInputPathBaseDay
         foreach (var freq in _input.GroupBy(x => x.Frequency))
         {
             freq.Subsets(2)
-                .SelectMany(x => new[]
-                {
-                    new Antenna('#', x[0].X - (x[1].X - x[0].X), x[0].Y - (x[1].Y - x[0].Y)),
-                    new Antenna('#', x[1].X - (x[0].X - x[1].X), x[1].Y - (x[0].Y - x[1].Y))
-                })
+                .SelectMany(x => AntiSpots(x[0], x[1]))
                 .Where(AntennaInBounds)
                 .ForEach(x => antiSpots.Add(x));
         }
@@ -83,6 +79,12 @@ public sealed class Day08 : CustomInputPathBaseDay
             yield return new Antenna('#', b.X - k * (a.X - b.X), b.Y - k * (a.Y - b.Y));
             k++;
         }
+    }
+
+    private IEnumerable<Antenna> AntiSpots(Antenna a, Antenna b)
+    {
+        yield return new Antenna('#', a.X - (b.X - a.X), a.Y - (b.Y - a.Y));
+        yield return new Antenna('#', b.X - (a.X - b.X), b.Y - (a.Y - b.Y));
     }
     
     private record Antenna(char Frequency, int X, int Y);
