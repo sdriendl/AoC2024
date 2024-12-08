@@ -33,30 +33,24 @@ public sealed class Day08 : CustomInputPathBaseDay
 
     public override async ValueTask<string> Solve_1()
     {
-        HashSet<Antenna> antiSpots = [];
-        foreach (var freq in _input.GroupBy(x => x.Frequency))
-        {
-            freq.Subsets(2)
-                .SelectMany(x => AntiSpots(x[0], x[1]))
-                .Where(AntennaInBounds)
-                .ForEach(x => antiSpots.Add(x));
-        }
-
-        return antiSpots.Count.ToString();
+        return _input.GroupBy(x => x.Frequency)
+            .SelectMany(x => x.Subsets(2))
+            .SelectMany(x => AntiSpots(x[0], x[1]))
+            .Where(AntennaInBounds)
+            .Distinct()
+            .Count()
+            .ToString();
     }
 
     public override async ValueTask<string> Solve_2()
     {
-        HashSet<Antenna> antiSpots = [];
-        foreach (var freq in _input.GroupBy(x => x.Frequency))
-        {
-            freq.Subsets(2)
-                .SelectMany(x => AntiSpotsInLine(x[0], x[1]))
-                .Where(AntennaInBounds)
-                .ForEach(x => antiSpots.Add(x));
-        }
-
-        return antiSpots.Count.ToString();
+        return _input.GroupBy(x => x.Frequency)
+            .SelectMany(x => x.Subsets(2))
+            .SelectMany(x => AntiSpotsInLine(x[0], x[1]))
+            .Where(AntennaInBounds)
+            .Distinct()
+            .Count()
+            .ToString();
     }
 
     private bool AntennaInBounds(Antenna a)
@@ -86,6 +80,6 @@ public sealed class Day08 : CustomInputPathBaseDay
         yield return new Antenna('#', a.X - (b.X - a.X), a.Y - (b.Y - a.Y));
         yield return new Antenna('#', b.X - (a.X - b.X), b.Y - (a.Y - b.Y));
     }
-    
+
     private record Antenna(char Frequency, int X, int Y);
 }
