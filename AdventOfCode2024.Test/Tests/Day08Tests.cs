@@ -1,0 +1,136 @@
+﻿namespace AdventOfCode2024.Test.Tests;
+
+public class Day08Tests
+{
+    [Fact]
+    public async void Solve_1_Simple()
+    {
+        // Arrange
+        var testInput =
+            """
+            ..........
+            ..........
+            ..........
+            ....a.....
+            ........a.
+            .....a....
+            ..........
+            ..........
+            ..........
+            ..........
+            """;
+
+
+        using var tempFile = new TemporaryInputFile(testInput);
+        var day = new Day08
+        {
+            TestInputFilePath = tempFile.FilePath
+        };
+
+        // Act
+        var result = await day.Solve_1();
+
+        // Assert
+        Assert.Equal("4", result);
+    }
+    
+    [Fact]
+    public async void Solve_1_ReturnsCorrectResult()
+    {
+        // Arrange
+        var testInput =
+            """
+            ............
+            ........0...
+            .....0......
+            .......0....
+            ....0.......
+            ......A.....
+            ............
+            ............
+            ........A...
+            .........A..
+            ............
+            ............
+            """;
+
+
+        using var tempFile = new TemporaryInputFile(testInput);
+        var day = new Day08
+        {
+            TestInputFilePath = tempFile.FilePath
+        };
+
+        // Act
+        var result = await day.Solve_1();
+
+        // Assert
+        Assert.Equal("14", result);
+    }
+    
+    [Fact]
+    public async void Solve_2_Simple()
+    {
+        // Arrange
+        var testInput =
+            """
+            T.........
+            ...T......
+            .T........
+            ..........
+            ..........
+            ..........
+            ..........
+            ..........
+            ..........
+            ..........
+            """;
+
+
+        using var tempFile = new TemporaryInputFile(testInput);
+        var day = new Day08
+        {
+            TestInputFilePath = tempFile.FilePath
+        };
+
+        // Act
+        var result = await day.Solve_2();
+
+        // Assert
+        Assert.Equal("9", result);
+    }
+    
+    [Fact]
+    public async void Solve_2_ReturnsCorrectResult()
+    {
+        // Arrange
+        var testInput =
+            """
+            ............
+            ........0...
+            .....0......
+            .......0....
+            ....0.......
+            ......A.....
+            ............
+            ............
+            ........A...
+            .........A..
+            ............
+            ............
+            """;
+
+
+        using var tempFile = new TemporaryInputFile(testInput);
+        var day = new Day08
+        {
+            TestInputFilePath = tempFile.FilePath
+        };
+
+        // Act
+        var result = await day.Solve_2();
+
+        // Assert
+        Assert.Equal("34", result);
+    }
+}
