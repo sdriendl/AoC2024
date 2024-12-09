@@ -12,12 +12,9 @@ public sealed class Day09 : CustomInputPathBaseDay
     }
     protected override void Initialize()
     {
-        _input = [];
-        var input = File.ReadAllText(InputFilePath);//.ToList().Select(c => int.Parse(c.ToString())).ToList();
-        foreach (var n in input)
-        {
-            _input.Add(n - '0');
-        }
+        _input = File.ReadAllText(InputFilePath)
+                     .Select(n => n - '0')
+                     .ToList();
     }
 
     public async override ValueTask<string> Solve_1()
@@ -58,9 +55,9 @@ public sealed class Day09 : CustomInputPathBaseDay
         chunks = chunks.OrderByDescending(x => x.Key).ToList();
         var firstPossibleFree = new int[chunks.Max(x => x.Size) + 1];
 
-        foreach (var chunk in chunks)
+        foreach (var (Key, Size, StartingIndex) in chunks)
         {
-            SwapChunk(chunk.Key, chunk.Size, chunk.StartingIndex);
+            SwapChunk(Key, Size, StartingIndex);
         }
 
         void SwapChunk(int key, int size, int startingIndex)
