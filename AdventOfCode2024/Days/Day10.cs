@@ -12,7 +12,9 @@ public class Day10 : CustomInputPathBaseDay
 
     protected override void Initialize()
     {
-        _input= File.ReadAllLines(InputFilePath).Select(line => line.Select(n => n - '0').ToList()).ToList();
+        _input= File.ReadAllLines(InputFilePath)
+            .Select(line => line.Select(n => n - '0').ToList())
+            .ToList();
     }
 
     public async override ValueTask<string> Solve_1()
@@ -23,7 +25,10 @@ public class Day10 : CustomInputPathBaseDay
             for (int x = 0; x < _input[0].Count; x++)
             {
                 if (_input[y][x] != 0) continue;
-                result += ReachablePeaksFrom(x, y).Count;
+                result += TrailsStartingAt(x, y)
+                    .Select(p => p.Last())
+                    .Distinct()
+                    .Count();
             }
         }
 
@@ -44,31 +49,6 @@ public class Day10 : CustomInputPathBaseDay
 
         return result.ToString();
     }
-
-    private ISet<(int X, int Y)> ReachablePeaksFrom(int x, int y)
-    {
-        var frontier = new Stack<(int X, int Y)>();
-        var peaks = new HashSet<(int X, int Y)>();
-
-        frontier.Push((x, y));
-
-        while (frontier.TryPop(out var p))
-        {
-            if (_input[p.Y][p.X] == 9)
-            {
-                peaks.Add((p.X, p.Y));
-                continue;
-            }
-
-            foreach (var neighbor in Neighbors(p))
-            {
-                frontier.Push(neighbor);
-            }
-        }
-        return peaks;
-    }
-
-
 
     private List<List<(int X, int Y)>> TrailsStartingAt(int x, int y)
     {
