@@ -64,10 +64,10 @@ public sealed class Day13 : CustomInputPathBaseDay
     private (long pa, long pb) Solve(long[,] m, long[] v)
     {
         var det = 1.0 / (m[0, 0] * m[1, 1] - m[0, 1] * m[1, 0]);
-        var invA = new double[,] 
-        { 
-            { det * m[1, 1], -det * m[0, 1] }, 
-            { -det * m[1, 0], det * m[0, 0] } 
+        var invA = new double[,]
+        {
+            { det * m[1, 1], -det * m[0, 1] },
+            { -det * m[1, 0], det * m[0, 0] }
         };
         var pa = v[0] * invA[0, 0] + v[1] * invA[0, 1];
         var pb = v[0] * invA[1, 0] + v[1] * invA[1, 1];
@@ -84,22 +84,23 @@ public sealed class Day13 : CustomInputPathBaseDay
     }
     private record Button(long X, long Y)
     {
-        public static Parser<Button> ButtonParser(string Name)
-            => from _ in Parse.String($"Button {Name}: X+")
-               from x in Parse.LetterOrDigit.Many().Text().Select(long.Parse)
-               from comma in Parse.Char(',')
-               from _2 in Parse.String(" Y+")
-               from y in Parse.LetterOrDigit.Many().Text().Select(long.Parse)
+        public static Parser<Button> ButtonParser(string name)
+            => from _ in Parse.String($"Button {name}:").Token()
+               from x in Parse.String("X+").Then(_ => ParseDigits())
+               from _2 in Parse.Char(',').Token()
+               from y in Parse.String("Y+").Then(_ => ParseDigits())
                select new Button(x, y);
     }
     private record Prize(long X, long Y)
     {
         public static Parser<Prize> PrizeParser
-            => from _ in Parse.String("Prize: X=")
-               from x in Parse.LetterOrDigit.Many().Text().Select(long.Parse)
-               from comma in Parse.Char(',')
-               from _2 in Parse.String(" Y=")
-               from y in Parse.LetterOrDigit.Many().Text().Select(long.Parse)
+            => from _ in Parse.String("Prize:").Token()
+               from x in Parse.String("X=").Then(_ => ParseDigits())
+               from _2 in Parse.Char(',').Token()
+               from y in Parse.String("Y=").Then(_ => ParseDigits())
                select new Prize(x, y);
     }
+
+    private static Parser<long> ParseDigits()
+        => Parse.Digit.Many().Text().Select(long.Parse);
 }
