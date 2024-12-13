@@ -5,7 +5,7 @@ namespace AdventOfCode2024.Days;
 
 public sealed class Day13 : CustomInputPathBaseDay
 {
-    private List<Machine> _input;
+    private IEnumerable<Machine> _input;
     public Day13()
     {
         Initialize();
@@ -13,10 +13,7 @@ public sealed class Day13 : CustomInputPathBaseDay
 
     protected override void Initialize()
     {
-        _input = File.ReadAllText(InputFilePath)
-            .Split(new[] { "\n\n" }, StringSplitOptions.RemoveEmptyEntries)
-            .Select(section => Machine.MachineParser.Parse(section))
-            .ToList();
+        _input = Machine.MachineParser.Token().Many().Parse(File.ReadAllText(InputFilePath));
     }
 
     public async override ValueTask<string> Solve_1()
