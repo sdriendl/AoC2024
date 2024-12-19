@@ -1,18 +1,11 @@
 ﻿using AdventOfCode.Common;
-using Sprache;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AdventOfCode2024.Days;
 
 public sealed class Day19 : CustomInputPathBaseDay
 {
-    private List<string> _patterns;
-    private List<string> _designs;
-    private Dictionary<string, long> _cache;
+    private IEnumerable<string> _patterns;
+    private IEnumerable<string> _designs;
 
     public Day19()
     {
@@ -21,81 +14,92 @@ public sealed class Day19 : CustomInputPathBaseDay
     protected override void Initialize()
     {
         var sp = File.ReadAllText(InputFilePath).Split("\n\n");
-        _patterns = sp[0].Split(", ").ToList();
-        _designs = sp[1].Split("\n", options: StringSplitOptions.RemoveEmptyEntries).ToList();
+        _patterns = sp[0].Split(", ");
+        _designs = sp[1].Split("\n", options: StringSplitOptions.RemoveEmptyEntries);
     }
     public async override ValueTask<string> Solve_1()
     {
-        _cache = [];
-        var count = 0;
-        var i = 0;
-        foreach (var design in _designs)
-        {
-            if (IsDesignPossible(design)) count++;
-        }
-        return count.ToString();
+        return _designs.AsParallel().Count(IsDesignPossible).ToString();
     }
 
     public async override ValueTask<string> Solve_2()
     {
-        _cache = [];
-
-        long count = 0;
-        var i = 0;
-        foreach (var design in _designs)
-        {
-            count += CountDesigns(design);
-        }
-        return count.ToString();
+        return _designs.AsParallel().Sum(CountDesigns).ToString();
     }
 
     public bool IsDesignPossible(string design)
     {
         if (string.IsNullOrWhiteSpace(design)) return false;
-        if (_cache.TryGetValue(design, out var v))
+
+        ReadOnlySpan<char> designSpan = design.AsSpan();
+        Dictionary<string, bool> cache = [];
+        return IsDesignPossibleInternal(designSpan, cache);
+    }
+
+    private bool IsDesignPossibleInternal(ReadOnlySpan<char> design, Dictionary<string, bool> cache)
+    {
+        if (design.IsEmpty) return false;
+
+        string designKey = design.ToString();
+        if (cache.TryGetValue(designKey, out var cachedResult))
         {
-            return v > 0;
-        }
-        var result = false;
-        foreach (var pattern in _patterns)
-        {
-            if (design == pattern) return true;
-            if (design.StartsWith(pattern))
-            {
-                var dr = IsDesignPossible(string.Join("", design.Skip(pattern.Length)));
-                if (dr) { result = true; break; }
-            }
-        }
-        var ways = _cache.GetValueOrDefault(design, 0);
-        if (result)
-        {
-            _cache[design] = ways + 1;
-        }
-        else
-        {
-            _cache[design] = ways;
+            return cachedResult;
         }
 
-        return result;
+        foreach (var pattern in _patterns)
+        {
+            ReadOnlySpan<char> patternSpan = pattern.AsSpan();
+
+            if (design.SequenceEqual(patternSpan)) return true;
+
+            if (design.StartsWith(patternSpan, StringComparison.Ordinal))
+            {
+                var remaining = design[patternSpan.Length..];
+                if (IsDesignPossibleInternal(remaining, cache))
+                {
+                    cache[designKey] = true;
+                    return true;
+                };
+            }
+        }
+        cache[designKey] = false;
+        return false;
     }
 
     public long CountDesigns(string design)
     {
         if (string.IsNullOrWhiteSpace(design)) return 1;
-        if (_cache.TryGetValue(design, out var v))
+
+        ReadOnlySpan<char> designSpan = design.AsSpan();
+        Dictionary<string, long> cache = [];
+
+        return CountDesignsInternal(designSpan, cache);
+    }
+
+    private long CountDesignsInternal(ReadOnlySpan<char> design, Dictionary<string, long> cache)
+    {
+        if (design.IsEmpty) return 1;
+
+        string designKey = design.ToString();
+        if (cache.TryGetValue(designKey, out var cachedResult))
         {
-            return v;
+            return cachedResult;
         }
+
         long ways = 0;
+
         foreach (var pattern in _patterns)
         {
-            if (design.StartsWith(pattern))
+            ReadOnlySpan<char> patternSpan = pattern.AsSpan();
+
+            if (design.StartsWith(patternSpan, StringComparison.Ordinal))
             {
-                ways += CountDesigns(string.Join("", design.Skip(pattern.Length)));
+                var remaining = design[patternSpan.Length..];
+                ways += CountDesignsInternal(remaining, cache);
             }
         }
-        _cache[design] = ways;
 
-        return _cache.GetValueOrDefault(design, 0);
+        cache[designKey] = ways;
+        return ways;
     }
 }
