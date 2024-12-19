@@ -1,10 +1,11 @@
 ﻿using AdventOfCode.Common;
+using MoreLinq.Extensions;
 
 namespace AdventOfCode2024.Days;
 
 public sealed class Day19 : CustomInputPathBaseDay
 {
-    private IEnumerable<string> _patterns;
+    private List<string> _patterns;
     private IEnumerable<string> _designs;
 
     public Day19()
@@ -14,7 +15,7 @@ public sealed class Day19 : CustomInputPathBaseDay
     protected override void Initialize()
     {
         var sp = File.ReadAllText(InputFilePath).Split("\n\n");
-        _patterns = sp[0].Split(", ");
+        _patterns = sp[0].Split(", ").ToList();
         _designs = sp[1].Split("\n", options: StringSplitOptions.RemoveEmptyEntries);
     }
     public async override ValueTask<string> Solve_1()
@@ -24,7 +25,7 @@ public sealed class Day19 : CustomInputPathBaseDay
 
     public async override ValueTask<string> Solve_2()
     {
-        return _designs.AsParallel().Sum(CountDesigns).ToString();
+        return _designs.Sum(s => CountDesignsBottomUp(s.AsSpan())).ToString();
     }
 
     public bool IsDesignPossible(string design)
@@ -54,8 +55,7 @@ public sealed class Day19 : CustomInputPathBaseDay
 
             if (design.StartsWith(patternSpan, StringComparison.Ordinal))
             {
-                var remaining = design[patternSpan.Length..];
-                if (IsDesignPossibleInternal(remaining, cache))
+                if (IsDesignPossibleInternal(design[patternSpan.Length..], cache))
                 {
                     cache[designKey] = true;
                     return true;
@@ -94,12 +94,28 @@ public sealed class Day19 : CustomInputPathBaseDay
 
             if (design.StartsWith(patternSpan, StringComparison.Ordinal))
             {
-                var remaining = design[patternSpan.Length..];
-                ways += CountDesignsInternal(remaining, cache);
+                ways += CountDesignsInternal(design[patternSpan.Length..], cache);
             }
         }
 
         cache[designKey] = ways;
         return ways;
+    }
+
+    private long CountDesignsBottomUp(ReadOnlySpan<char> design)
+    {
+        long[] dp = new long[design.Length + 1];
+        dp[design.Length] = 1;
+        for (int i = design.Length - 1; i >= 0; i--)
+        {
+            foreach (var pattern in _patterns)
+            {
+                if (design[i..].StartsWith(pattern))
+                {
+                    dp[i] += dp[i + pattern.Length];
+                }
+            }
+        }
+        return dp[0];
     }
 }
