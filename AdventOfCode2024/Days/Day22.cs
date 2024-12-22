@@ -1,4 +1,5 @@
-﻿using AdventOfCode.Common;
+﻿using System.Collections.Concurrent;
+using AdventOfCode.Common;
 using MoreLinq;
 
 namespace AdventOfCode2024.Days;
@@ -28,14 +29,19 @@ public sealed class Day22 : CustomInputPathBaseDay
 
     public override async ValueTask<string> Solve_2()
     {
-        return _input.AsParallel()
-                     .SelectMany(s => SellPrices(s, N))
-                     .GroupBy(p => p.Item1)
-                     .Max(g => g.Sum(k => k.Item2))
-                     .ToString();
+        var dict = new ConcurrentDictionary<(long, long, long, long), long>();
+
+        Parallel.ForEach(_input, seed =>
+        {
+            AddSellPrices(dict, seed, N);
+        });
+        return dict.Max(d => d.Value).ToString();
     }
 
-    private IEnumerable<((long, long, long, long), long)> SellPrices(int seed, int n)
+    private void AddSellPrices(
+        ConcurrentDictionary<(long, long, long, long), long> dict,
+        int seed, 
+        int n)
     {
         var seen = new HashSet<(long, long, long, long)>();
         var secrets = NSecretNumbers(seed, n);
@@ -50,7 +56,8 @@ public sealed class Day22 : CustomInputPathBaseDay
                 );
             if (seen.Add(deltas))
             {
-                yield return (deltas, window[4] % 10);
+                var rp = window[4] % 10;
+                dict.AddOrUpdate(deltas, window[4] % 10, (k,v) => v + rp);
             }
         }
     }
