@@ -29,7 +29,7 @@ public sealed class Day22 : CustomInputPathBaseDay
 
     public override async ValueTask<string> Solve_2()
     {
-        var dict = new ConcurrentDictionary<(long, long, long, long), long>();
+        var dict = new ConcurrentDictionary<int,int>();
 
         Parallel.ForEach(_input, seed =>
         {
@@ -39,11 +39,11 @@ public sealed class Day22 : CustomInputPathBaseDay
     }
 
     private void AddSellPrices(
-        ConcurrentDictionary<(long, long, long, long), long> dict,
+        ConcurrentDictionary<int, int> dict,
         int seed, 
         int n)
     {
-        var seen = new HashSet<(long, long, long, long)>();
+        var seen = new HashSet<long>();
         var secrets = NSecretNumbers(seed, n);
         foreach (var window in secrets.Window(5))
         {
@@ -54,27 +54,29 @@ public sealed class Day22 : CustomInputPathBaseDay
                     window[3] % 10 - window[2] % 10,
                     window[4] % 10 - window[3] % 10
                 );
-            if (seen.Add(deltas))
+            if (seen.Add(DeltasKey(deltas)))
             {
                 var rp = window[4] % 10;
-                dict.AddOrUpdate(deltas, window[4] % 10, (k,v) => v + rp);
+                dict.AddOrUpdate(DeltasKey(deltas), rp, (k,v) => v + rp);
             }
+        }
+
+        int DeltasKey((int,int,int,int) deltas)
+        {
+            return 6859 * deltas.Item1 + 361 * deltas.Item2 + 19 * deltas.Item3 + deltas.Item4;
         }
     }
 
-    private long NextSecretNumber(long prev)
+    private int NextSecretNumber(int prev)
     {
-        prev ^= prev << 6;
-        prev %= 16777216;
-        prev ^= prev >> 5;
-        prev %= 16777216;
-        prev ^= prev << 11;
-        prev %= 16777216;
+        prev ^= prev << 6 & 0xFFFFFF;
+        prev ^= prev >> 5 & 0xFFFFFF;
+        prev ^= prev << 11 & 0xFFFFFF;
 
         return prev;
     }
 
-    private IEnumerable<long> NSecretNumbers(long seed, int n)
+    private IEnumerable<int> NSecretNumbers(int seed, int n)
     {
         var next = seed;
         yield return next;
@@ -85,7 +87,7 @@ public sealed class Day22 : CustomInputPathBaseDay
         }
     }
 
-    private long NthSecretNumber(long seed, int n)
+    private long NthSecretNumber(int seed, int n)
     {
         for (int i = 0; i < n; i++)
         {
